@@ -19,7 +19,7 @@ struct message
    char text[WORD_SIZE];
 };
 
-int main(int arc, char **argv)
+int main(int argc, char **argv)
 {
    struct message msg;
    msg.type = 1;
