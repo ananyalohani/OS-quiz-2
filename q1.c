@@ -9,10 +9,17 @@
 int main(int argc, char **argv) 
 {
     pid_t pid;
-    int fd[2];
+    int fd_send[2], fd_rcv[2];
     int res;
     char input[MAX_SIZE], output[MAX_SIZE];
-    res = pipe(fd);
+    res = pipe(fd_send);
+    if(res != 0)
+    {
+        perror("Error");
+        return -1;
+    }
+
+    res = pipe(fd_rcv);
     if(res != 0)
     {
         perror("Error");
@@ -24,22 +31,28 @@ int main(int argc, char **argv)
     {
         // parent process
         char *str = fgets(input, MAX_SIZE, stdin);
-        close(fd[0]);
+        close(fd_send[0]);
         if(str == NULL)
         {
             fprintf(stderr, "Could not read from stdin.\n");
             return -1;
         }
-        write(fd[1], input, sizeof(input));
-        close(fd[1]);
+        write(fd_send[1], input, sizeof(input));
+        close(fd_send[1]);
+
         wait(NULL);
 
+        close(fd_rcv[1]);
+        read(fd_rcv[0], output, sizeof(output));
+        close(fd_rcv[0]);
+
+        printf("%s", output);
     }
     else if(pid == 0)
     {
         // child process
-        close(fd[1]);
-        read(fd[0], output, sizeof(output));
+        close(fd_send[1]);
+        read(fd_send[0], output, sizeof(output));
         char upper_output[MAX_SIZE];
         int i = 0, j = 0;
         while(output[i])
@@ -111,8 +124,13 @@ int main(int argc, char **argv)
             }
             // printf("%c ", upper_output[j-1]);
         }
-        printf("%s", upper_output);
-        close(fd[0]);
+        close(fd_send[0]);
+
+        close(fd_rcv[0]);
+        write(fd_rcv[1], upper_output, sizeof(upper_output));
+        close(fd_rcv[1]);
+
+        exit(0);
     }
     else 
     {
