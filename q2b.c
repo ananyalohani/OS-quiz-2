@@ -8,12 +8,12 @@
 #include <sys/msg.h>
 #include <string.h>
 
-#define WORD_SIZE 200
-#define PERMS 0644
-#define IPC_RMID 0
-#define IPC_CREAT 01000
-#define END "EOMQ"
-#define DELIM " "
+#define WORD_SIZE    200
+#define PERMS        0644
+#define IPC_RMID     0
+#define IPC_CREAT    01000
+#define END          "EOMQ"
+#define DELIM        " "
 
 struct message 
 {

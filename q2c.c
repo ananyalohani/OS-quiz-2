@@ -6,12 +6,12 @@
 #include <sys/msg.h>
 #include <string.h>
 
-#define WORD_SIZE 200
-#define PERMS 0644
-#define IPC_RMID 0
-#define IPC_CREAT 01000
-#define END "EOMQ"
-#define DELIM " "
+#define WORD_SIZE    200
+#define PERMS        0644
+#define IPC_RMID     0
+#define IPC_CREAT    01000
+#define END          "EOMQ"
+#define DELIM        " "
 
 struct message 
 {
@@ -43,9 +43,12 @@ int main(int argc, char **argv)
          exit(1);
       }
       eoq = strcmp(msg.text, END);
-      if(eoq) printf("%s ", msg.text);
+      if(eoq) printf("%s\n", msg.text);
       if(eoq == 0 && queue_end == 1) break;
-      else if(eoq == 0) queue_end++;
+      else if(eoq == 0) 
+      {
+         queue_end++;
+      }   
    }
    printf("\n");
    res = msgctl(msg_id, IPC_RMID, NULL);
