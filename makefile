@@ -10,4 +10,3 @@ all: $(OBJ)
 
 clean:
 	rm -f $(OBJ)
-
