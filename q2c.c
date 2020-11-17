@@ -1,8 +1,3 @@
-// int main(int argc, char **argv)
-// {
-//     return 0;
-// }
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <errno.h>
@@ -11,45 +6,53 @@
 #include <sys/msg.h>
 #include <string.h>
 
+#define WORD_SIZE 200
 #define PERMS 0644
-struct my_msgbuf {
-   long mtype;
-   char mtext[200];
+#define IPC_RMID 0
+#define IPC_CREAT 01000
+#define END "EOMQ"
+#define DELIM " "
+
+struct message 
+{
+   long type;
+   char text[WORD_SIZE];
 };
 
-int main(void) {
-   struct my_msgbuf buf;
-   int msqid;
-   int toend;
-   key_t key = 23;
-   
-//    if ((key = ftok("msgq.txt", 'B')) == -1) {
-//       perror("ftok");
-//       exit(1);
-//    }
-   
-   if ((msqid = msgget(key, PERMS)) == -1) { /* connect to the queue */
+int main(int arc, char **argv)
+{
+   struct message msg;
+   msg.type = 1;
+   int msg_id, res, eoq;
+   int queue_end = 0;
+   key_t key = 2019018;
+
+   msg_id = msgget(key, PERMS | IPC_CREAT);
+   if(msg_id == -1)
+   {
       perror("msgget");
-      exit(1);
+      return -1;
    }
-   printf("message queue: ready to receive messages.\n");
-   
-   for(;;) { /* normally receiving never ends but just to make conclusion 
-             /* this program ends wuth string of end */
-      if (msgrcv(msqid, &buf, sizeof(buf.mtext), 0, 0) == -1) {
+
+   while(1)
+   {
+      res = msgrcv(msg_id, &msg, sizeof(msg.text), msg.type, 0);
+      if(res == -1)
+      {
          perror("msgrcv");
          exit(1);
       }
-      printf("recvd: \"%s\"\n", buf.mtext);
-      toend = strcmp(buf.mtext,"end");
-      if (toend == 0)
-      break;
+      eoq = strcmp(msg.text, END);
+      if(eoq) printf("%s ", msg.text);
+      if(eoq == 0 && queue_end == 1) break;
+      else if(eoq == 0) queue_end++;
    }
-   printf("message queue: done receiving messages.\n");
-   if (msgctl(msqid, IPC_RMID, NULL) == -1) {
+   printf("\n");
+   res = msgctl(msg_id, IPC_RMID, NULL);
+   if(res == -1)
+   {
       perror("msgctl");
       exit(1);
    }
-//    system("rm msgq.txt");
    return 0;
 }

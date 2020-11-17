@@ -11,7 +11,7 @@
 #define WORD_SIZE 200
 #define PERMS 0644
 #define IPC_RMID 0
-#define IPC_CREAT 001000
+#define IPC_CREAT 01000
 #define END "EOMQ"
 #define DELIM " "
 
@@ -23,7 +23,6 @@ struct message
 
 int main(int argc, char **argv)
 {
-    printf("hello\n");
     struct message msg;
     msg.type = 1;
     key_t key = 2019018;
@@ -47,12 +46,10 @@ int main(int argc, char **argv)
     char str[FILE_SIZE];
     while(fgets(str, FILE_SIZE + 1, fp))
     {
-        // printf("hello 1");
         char *rem;
         char *token = strtok_r(str, DELIM, &rem);
         while(token != NULL)
         {
-            printf("%s ", token);
             strcpy(msg.text, token);
             res = msgsnd(msg_id, &msg, strlen(token) + 1, 0);
             if(res == -1)
@@ -60,7 +57,6 @@ int main(int argc, char **argv)
                 perror("msgsnd");
             }
             token = strtok_r(NULL, DELIM, &rem);
-            // printf("hello");
         }
     }
 
@@ -70,7 +66,7 @@ int main(int argc, char **argv)
     {
         perror("msgsnd");
     }
-    printf("done\n");
+    // printf("done\n");
     fclose(fp);
     return 0;
 }
