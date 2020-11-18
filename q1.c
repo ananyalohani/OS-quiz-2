@@ -57,72 +57,8 @@ int main(int argc, char **argv)
         int i = 0, j = 0;
         while(output[i])
         {
-            int c = output[i];
-            if(c == '\\')
-            {
-                char esc = output[i+1];
-                i+=2;
-                if(esc == 't')
-                {
-                    upper_output[j] = '\t';
-                }
-                else if(esc == 'v')
-                {
-                    upper_output[j] = '\v';
-                }
-                else if(esc == 'a')
-                {
-                    upper_output[j] = '\a';
-                }
-                else if(esc == 'b')
-                {
-                    upper_output[j] = '\b';
-                }
-                else if(esc == 'e')
-                {
-                    upper_output[j] = '\e';
-                }
-                else if(esc == 'f')
-                {
-                    upper_output[j] = '\f';
-                }
-                else if(esc == 'n')
-                {
-                    upper_output[j] = '\n';
-                }
-                else if(esc == 'r')
-                {
-                    upper_output[j] = '\r';
-                }
-                else if(esc == '\\')
-                {
-                    upper_output[j] = '\\';
-                }
-                else if(esc == '\'')
-                {
-                    upper_output[j] = '\'';
-                }
-                else if(esc == '\"')
-                {
-                    upper_output[j] = '\"';
-                }
-                else if(esc == '\?')
-                {
-                    upper_output[j] = '\?';
-                }
-                else
-                {
-                    i--;
-                    upper_output[j] = '\\';
-                }
-                j++;
-            }
-            else 
-            {
-                upper_output[j++] = toupper(c);
-                i++;
-            }
-            // printf("%c ", upper_output[j-1]);
+            char c = output[i];
+            upper_output[i++] = toupper(c);
         }
         close(fd_send[0]);
 
