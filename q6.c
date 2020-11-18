@@ -4,16 +4,15 @@
 #include <stdlib.h>
 #include <unistd.h>
 
-#define N 5
-#define TIME 1
-#define LEFT pnum
-#define RIGHT (pnum + 1) % N
+#define N       5
+#define TIME    1
+#define LEFT    pnum
+#define RIGHT   (pnum + 1) % N
 
 struct philos 
 {
     int num;
     int eaten;
-    pthread_t phil_tid;
 };
 
 sem_t mutex;
@@ -28,6 +27,7 @@ int have_all_eaten();
 int main(int argc, char **argv)
 {
     sem_init(&mutex, 0, 1);
+    pthread_t phil_tid[N];
 
     for(int i = 0; i < N; i++)
     {
@@ -37,15 +37,14 @@ int main(int argc, char **argv)
     }
     for(int i = 0; i < N; i++)
     {
-        pthread_create(&phil[i].phil_tid, NULL, phil_thread, &phil[i].num);
-        // printf("P%d is thinking\n", i + 1);
+        pthread_create(&phil_tid[i], NULL, phil_thread, &phil[i].num);
     }
 
     for(int i = 0; i < N; i++)
     {
-        pthread_join(phil[i].phil_tid, NULL);
+        pthread_join(phil_tid[i], NULL);
     }
-    // printf("All philosophers have eaten.\n");
+
     sem_destroy(&mutex);
     for(int i = 0; i < N; i++)
     {
@@ -81,7 +80,7 @@ void pick_right_chop(int pnum)
 
     printf("P%d receives F%d, F%d\n", phil[pnum].num + 1, LEFT + 1, RIGHT + 1);
     phil[pnum].eaten++;
-    sleep(TIME);    //eating
+    sleep(TIME);    // eating
 
     sem_post(&chop[RIGHT]);
     sem_post(&chop[LEFT]);
