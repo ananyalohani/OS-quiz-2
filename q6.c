@@ -31,7 +31,7 @@ int main(int argc, char **argv)
 
     for(int i = 0; i < N; i++)
     {
-        sem_init(&chop[i], 0, 0);
+        sem_init(&chop[i], 0, 1);
         phil[i].num = i; 
         phil[i].eaten = 0;
     }
@@ -64,13 +64,14 @@ void *phil_thread(void *num)
         pick_left_chop(*i);
         pick_right_chop(*i);
     }
+    pthread_exit(0);
 }
 
 void pick_left_chop(int pnum)
 {
     sem_wait(&mutex);
     sem_wait(&chop[LEFT]);
-    printf("P%d receives F%d\n", phil[pnum].num + 1, LEFT);
+    printf("P%d receives F%d\n", phil[pnum].num + 1, LEFT + 1);
 }
 
 void pick_right_chop(int pnum)
@@ -78,7 +79,7 @@ void pick_right_chop(int pnum)
     sem_wait(&chop[RIGHT]);
     sem_post(&mutex);
 
-    printf("P%d receives F%d, F%d\n", phil[pnum].num + 1, LEFT, RIGHT);
+    printf("P%d receives F%d, F%d\n", phil[pnum].num + 1, LEFT + 1, RIGHT + 1);
     phil[pnum].eaten++;
     sleep(TIME);    //eating
 
