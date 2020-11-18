@@ -11,12 +11,13 @@
 #include <stdbool.h>
 #include <semaphore.h>
 
-#define CHAR_BLOCK_SIZE 500
-#define INT_BLOCK_SIZE sizeof(int)
-#define CHAR_KEY 1234
-#define INT_KEY 2456
-#define SEM_WRITER "/writer"
-#define SEM_READER "/reader"
+#define CHAR_BLOCK_SIZE 	500
+#define INT_BLOCK_SIZE 		sizeof(int)
+#define CHAR_KEY 			1234
+#define INT_KEY 			2456
+#define SEM_WRITER 			"/writer"
+#define SEM_READER 			"/reader"
+#define NUM_ITERATIONS		20
 
 void *attach_memblock(int size, key_t key);
 bool detach_memblock(void *block);
@@ -36,14 +37,15 @@ int main(int argc, char **argv)
 	pid_t pid = fork();
 	if(pid == 0)
 	{
-		sem_t *sem_writer = sem_open(SEM_WRITER, 0);
+		// write to data segment
+		sem_t *sem_writer = sem_open(SEM_WRITER, O_CREAT, 0660, 0);
 		if(sem_writer == SEM_FAILED)
 		{
 			perror("sem_open/writer");
 			exit(1);
 		}
 
-		sem_t *sem_reader = sem_open(SEM_READER, 0);
+		sem_t *sem_reader = sem_open(SEM_READER, O_CREAT, 0660, 0);
 		if(sem_reader == SEM_FAILED)
 		{
 			perror("sem_open/reader");
@@ -58,9 +60,16 @@ int main(int argc, char **argv)
 			exit(1);
 		}
 
+		for(int i = 0; i < NUM_ITERATIONS; i++)
+		{
+			sem_wait(sem_reader);
+			strncpy(charblock, argv[1], CHAR_BLOCK_SIZE);
+			*intblock = atoi(argv[2]);
+			sem_post(sem_writer);
+		}
+
 		sem_wait(sem_reader);
-		strncpy(charblock, argv[1], CHAR_BLOCK_SIZE);
-		*intblock = atoi(argv[2]);
+		strncpy(charblock, "quit", CHAR_BLOCK_SIZE);
 		sem_post(sem_writer);
 
 		sem_close(sem_writer);
@@ -72,6 +81,7 @@ int main(int argc, char **argv)
 	}
 	else if(pid > 0)
 	{
+		// read from data segment
 		sem_t *sem_writer = sem_open(SEM_WRITER, O_CREAT, 0660, 0);
 		if(sem_writer == SEM_FAILED)
 		{
@@ -86,7 +96,6 @@ int main(int argc, char **argv)
 			exit(1);
 		}
 
-		// wait(NULL);
 		char *charblock = (char *)attach_memblock(CHAR_BLOCK_SIZE, CHAR_KEY);
 		int *intblock = (int *)attach_memblock(INT_BLOCK_SIZE, INT_KEY);
 		if(charblock == NULL || intblock == NULL)
@@ -95,16 +104,25 @@ int main(int argc, char **argv)
 			exit(1);
 		}
 
-		sem_wait(sem_writer);
-		printf("%s\n", charblock);
-		printf("%d\n", *intblock);
-		sem_post(sem_reader);
+		while(1)
+		{
+			sem_wait(sem_writer);
+			if(strlen(charblock) > 0)
+			{
+				printf("%s\n", charblock);
+				bool quit = (strcmp(charblock, "quit") == 0);
+				if(quit) break;
+				printf("%d\n", *intblock);
+				charblock[0] = 0;
+				*intblock = 0;
+			}
+			sem_post(sem_reader);	
+		}
 
 		sem_close(sem_writer);
 		sem_close(sem_reader);
 		detach_memblock(charblock);
 		detach_memblock(intblock);
-		
 	}
 
 	if(!destroy_memblock(CHAR_KEY) || !destroy_memblock(INT_KEY))
