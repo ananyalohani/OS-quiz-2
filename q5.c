@@ -5,7 +5,6 @@
 #include <stdlib.h>
 #include <fcntl.h>
 
-// sem_t sem_reader;
 pthread_mutex_t mutex;
 sem_t sem_writer;
 int read_count = 0;
@@ -17,26 +16,13 @@ void *writer_thread();
 
 int main(int argc, char **argv)
 {
-	// sem_init(sem_reader, 0, 1);
 	pthread_mutex_init(&mutex, NULL);
 	sem_init(&sem_writer, 0, 1);
 
 	pthread_t read_tid[5];
 	pthread_t write_tid[2];
 
-	// for(int i = 1; i <= 5; i++)
-	// {
-	// 	printf("i=%d", i);
-	// 	pthread_create(&read_tid[i], NULL, reader_thread, NULL);
-	// }
-
-	// for(int j = 1; j <= 2; j++)
-	// {
-	// 	printf("i=%d", i);
-	// 	pthread_create(&write_tid[j], NULL, writer_thread, NULL);
-	// }
-
-	for(int i = 1; i <= 10; i++)
+	for(int i = 0; i < 10; i++)
 	{
 		int remtwo = i%2;
 		int remfive = i%5;
