@@ -10,7 +10,6 @@
 #define PERMS        0644
 #define IPC_RMID     0
 #define IPC_CREAT    01000
-#define END          "EOMQ"
 #define DELIM        " "
 
 struct message 
@@ -23,7 +22,7 @@ int main(int argc, char **argv)
 {
    struct message msg;
    msg.type = 1;
-   int msg_id, res, eoq;
+   int msg_id, res;
    int queue_end = 0;
    key_t key = 2019018;
 
@@ -42,15 +41,10 @@ int main(int argc, char **argv)
          perror("msgrcv");
          exit(1);
       }
-      eoq = strcmp(msg.text, END);
-      if(eoq) printf("%s\n", msg.text);
-      else if(eoq == 0 && queue_end == 1) break;
-      else if(eoq == 0) 
-      {
-         queue_end++;
-      }   
+
+      printf("%s\n", msg.text);
    }
-   printf("\n");
+
    res = msgctl(msg_id, IPC_RMID, NULL);
    if(res == -1)
    {

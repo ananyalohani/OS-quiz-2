@@ -57,16 +57,6 @@ int main(int argc, char **argv)
         }
     }
 
-    strcpy(buf, END);
-    sendto(
-        sock,
-        (const char *)buf,
-        strlen(buf),
-        MSG_CONFIRM, 
-        (const struct sockaddr *)&server,
-        len
-    );
-
     // printf("done\n");
     fclose(fp);
     close(sock);

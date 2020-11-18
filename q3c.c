@@ -14,7 +14,7 @@
 int main(int argc, char **argv) 
 {
     struct sockaddr_in server, client;
-    int sock, res, eoq, bytes;
+    int sock, res, bytes;
     int queue_end = 0;
 
     sock = socket(AF_INET, SOCK_DGRAM, 0);
@@ -52,10 +52,7 @@ int main(int argc, char **argv)
         );
 
         buf[bytes] = '\0';
-        eoq = strcmp(buf, END);
-        if(eoq) printf("%s\n", buf);
-        else if(eoq == 0 && queue_end == 1) break;
-        else if(eoq == 0) queue_end++;
+        printf("%s\n", buf);
     }
 
     // printf("done\n");

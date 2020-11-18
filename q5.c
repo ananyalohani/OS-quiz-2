@@ -2,6 +2,7 @@
 #include <pthread.h>
 #include <semaphore.h>
 #include <unistd.h>
+#include <stdbool.h>
 #include <stdlib.h>
 #include <fcntl.h>
 
@@ -54,6 +55,7 @@ int main(int argc, char **argv)
 
 void *reader_thread()
 {	
+	// while(1)
 	pthread_mutex_lock(&mutex);
 	read_count++;
 	if(read_count == 1) 

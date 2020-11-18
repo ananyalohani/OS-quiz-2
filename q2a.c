@@ -12,7 +12,6 @@
 #define PERMS        0644
 #define IPC_RMID     0
 #define IPC_CREAT    01000
-#define END          "EOMQ"
 #define DELIM        " "
 
 struct message 
@@ -60,12 +59,6 @@ int main(int argc, char **argv)
         }
     }
 
-    strcpy(msg.text, END);
-    res = msgsnd(msg_id, &msg, strlen(END) + 1, 0);
-    if(res == -1)
-    {
-        perror("msgsnd");
-    }
     // printf("done\n");
     fclose(fp);
     return 0;
