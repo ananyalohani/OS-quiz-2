@@ -27,7 +27,7 @@ int main(int argc, char **argv)
     memset(&server, 0, sizeof(server));
     memset(&client, 0, sizeof(client));
 
-    server.sin_family    = AF_INET;
+    server.sin_family = AF_INET;
     server.sin_addr.s_addr = INADDR_ANY;
     server.sin_port = htons(PORT);
 
@@ -54,7 +54,7 @@ int main(int argc, char **argv)
         buf[bytes] = '\0';
         eoq = strcmp(buf, END);
         if(eoq) printf("%s\n", buf);
-        if(eoq == 0 && queue_end == 1) break;
+        else if(eoq == 0 && queue_end == 1) break;
         else if(eoq == 0) queue_end++;
     }
 

@@ -26,7 +26,7 @@ int main(int argc, char **argv)
 
     memset(&server, 0, sizeof(server));
 
-    server.sin_family    = AF_INET;
+    server.sin_family = AF_INET;
     server.sin_addr.s_addr = INADDR_ANY;
     server.sin_port = htons(PORT);
     int len = sizeof(server);

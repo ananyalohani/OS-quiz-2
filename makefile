@@ -1,10 +1,10 @@
 CC=gcc
-CFLAGS=-I.
+CFLAGS=-I. -pthread
 DEPS = 
 OBJ = q1.o q2a.o q2b.o q2c.o q3a.o q3b.o q3c.o q4.o q5.o q6.o  
 
 %.o: %.c $(DEPS)
-	$(CC) -o $@ $< $(CFLAGS)
+	$(CC) $(CFLAGS) $< -o $@ 
 
 all: $(OBJ)
 

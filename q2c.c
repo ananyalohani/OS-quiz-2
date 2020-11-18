@@ -44,7 +44,7 @@ int main(int argc, char **argv)
       }
       eoq = strcmp(msg.text, END);
       if(eoq) printf("%s\n", msg.text);
-      if(eoq == 0 && queue_end == 1) break;
+      else if(eoq == 0 && queue_end == 1) break;
       else if(eoq == 0) 
       {
          queue_end++;
