@@ -1,0 +1,60 @@
+### Deadlock Avoidance
+Yes, the system is in a safe state. One safe sequence of execution is P0 -> P3 -> P1 -> P2 -> P4.
+
+### Explanation
+AVAILABLE = {3, 3, 2, 1}
+
+ALLOCATED = {{2, 0, 0, 1},  // P0
+             {3, 1, 2, 1},  // P1
+             {2, 1, 0, 3},  // P2 
+             {1, 3, 1, 2},  // P3 
+             {1, 4, 3, 2}}  // P4 
+
+MAX = { {4, 2, 1, 2},   // P0
+        {5, 2, 5, 2},   // P1 
+        {2, 3, 1, 6},   // P2 
+        {1, 4, 2, 4},   // P3 
+        {3, 6, 6, 5} }  // P4 
+According to the given ALLOCATION and MAX matrices, the NEED matrix is formed as follows:
+
+NEED[i][j] = MAX[i][j] - ALLOCATION[i][j]
+
+NEED = {{2, 2, 1, 1},   // P0
+        {2, 1, 3, 1},   // P1
+        {0, 2, 1, 3},   // P2
+        {0, 1, 1, 2},   // P3
+        {2, 2, 3, 3}}   // P4
+
+Step 1: We find an i such that NEED[i][j] <= AVAILABLE[j] for all j
+Step 2: We add the allocated resources of Pi to the AVAILABLE resources.
+        AVAILABLE[j] += ALLOCATED[i][j] for all j.
+Step 3: If no such i is available and all processes have not executed, the system is not in a safe state.
+
+i = 0
+NEED[0] = {2, 2, 1, 1}, thus NEED[0][j] <= AVAILABLE[j], for all j. Thus P0 can execute.
+Now, the new AVAILABLE = {5, 3, 2, 2}
+
+i = 1
+NEED[1] = {2, 1, 3, 1}, NEED[1][2] > AVAILABLE[2]. Thus P1 has to wait.
+
+i = 2
+NEED[2] = {0, 2, 1, 3}, NEED[2][3] > AVAILABLE[3]. Thus P2 has to wait.
+
+i = 3
+NEED[3] = {0, 1, 1, 2}, thus NEED[3][j] <= AVAILABLE[j], for all j. Thus P3 can execute.
+Now, the new AVAILABLE = {6, 6, 3, 4}
+
+i = 1
+NEED[1] = {2, 1, 3, 1}, thus NEED[1][j] <= AVAILABLE[j], for all j. Thus P1 can execute.
+Now, the new AVAILABLE = {9, 7, 5, 5}
+
+i = 2
+NEED[2] = {0, 2, 1, 3}, thus NEED[2][j] <= AVAILABLE[j], for all j. Thus P2 can execute.
+Now, the new AVAILABLE = {11, 8, 5, 8}
+
+i = 4
+NEED[4] = {2, 2, 3, 3}, thus NEED[4][j] <= AVAILABLE[j], for all j. Thus P4 can execute.
+Now, the new AVAILABLE = {12, 12, 8, 10}
+
+Thus one safe sequence is P0 -> P3 -> P1 -> P2 -> P4.
+Note: There can be multiple safe sequences. For example, P0 -> P3 -> P4 -> P1 -> P2 is also a safe sequence.
